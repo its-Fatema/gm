@@ -538,8 +538,8 @@ function setPiece(name, a, L) {
     case 'crossfire': len = 30; g(a, 30); cn(a + 2, er, 1, 'small', { interval: 3.4, warn: 1.1, burst: 1, phase: 1 }); cn(a + 26, gr - 2, -1, 'large', { interval: 3.2, warn: 1.0, burst: 1 });
       seg.pottery.push([a + 12, er], [a + 13, er], [a + 18, er]); star(a + 8, er - 2); star(a + 15, er - 2); star(a + 21, er - 2); seg.notes.push([a + 5, er - 4.2, 'crossfire! one in front, one behind', -.03, 22]); break;
     case 'arena1': { len = 32; g(a, 32); seg.checkpoints.push([a + 1, er]); const pi = LEVELS.indexOf(L);
-      const waves = pi === 0 ? [[{ k: 'purple' }, { k: 'purple' }], [{ k: 'purple' }, { k: 'yellow' }, { k: 'purple' }]]
-        : [[{ k: 'purple' }, { k: 'flyer' }], [{ k: 'yellow' }, { k: 'flyer' }, { k: 'purple', hop: true }], [{ k: 'flyer' }, { k: 'flyer' }, { k: 'yellow' }]];
+      const waves = pi === 0 ? [[{ k: 'purple' }, { k: 'purple' }]]
+  : [[{ k: 'purple' }, { k: 'flyer' }], [{ k: 'yellow' }, { k: 'flyer' }, { k: 'purple', hop: true }], [{ k: 'flyer' }, { k: 'flyer' }, { k: 'yellow' }]];
       seg.arenas.push({ c1: a + 2, c2: a + 30, r: er, waves }); star(a + 9, er - 2); star(a + 16, er - 2); star(a + 23, er - 2); seg.notes.push([a + 3, er - 4.2, 'a locked arena — beat every wave!', -.03, 22]); break; }
     case 'arena2': { len = 36; g(a, 36); seg.checkpoints.push([a + 1, er]); const pi = LEVELS.indexOf(L);
       const waves = pi === 3 ? [[{ k: 'yellow' }, { k: 'flyer' }, { k: 'flyer' }], [{ k: 'green' }, { k: 'yellow' }, { k: 'yellow' }], [{ k: 'green' }, { k: 'green' }, { k: 'flyer' }]]
