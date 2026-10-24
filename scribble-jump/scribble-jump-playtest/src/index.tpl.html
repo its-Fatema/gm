@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Scribble Jump — a hand-drawn notebook platform adventure</title>
+<meta name="description" content="Scribble Jump is a hand-drawn notebook platformer: smash pottery, slash curtains, stomp blobs and cross four ink-and-paper pages. Free to play in your browser.">
+<meta name="theme-color" content="#2a2824"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='44' fill='%23ff5a64' stroke='%232b2b33' stroke-width='7'/%3E%3Ccircle cx='36' cy='44' r='5' fill='%23fff'/%3E%3Ccircle cx='64' cy='44' r='5' fill='%23fff'/%3E%3Cpath d='M34 62q16 14 32 0' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>/*CSS*/</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="game" width="1024" height="576"></canvas>
+
+  <div id="hudbtns">
+    <button class="ib" id="b-snd" title="Sound (M)" aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 010 7"/><path class="x" d="M3 3l18 18"/></svg></button>
+    <button class="ib" id="b-fs" title="Fullscreen (F)" aria-label="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="ib skip" id="b-skip" title="Skip tutorial" aria-label="Skip tutorial" style="display:none">SKIP ▶</button>
+    <button class="ib" id="b-pause" title="Pause (Esc / P)" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+  </div>
+
+  <section id="title" class="screen">
+    <div class="sub2">a hand-drawn notebook platform adventure</div>
+    <div class="col">
+      <button class="btn primary" id="t-play">PLAY</button>
+      <button class="btn primary alt" id="t-endless">ENDLESS DASH</button>
+      <div class="row"><button class="btn" id="t-pages">PAGES</button><button class="btn" id="t-skins">SKINS</button><button class="btn" id="t-badges">BADGES</button></div>
+      <div class="row"><button class="btn small" id="t-how">HOW TO PLAY</button><button class="btn small" id="t-fs">FULLSCREEN</button><button class="btn small" id="t-credits">CREDITS</button></div>
+    </div>
+    <div class="foot"><span class="desk">Arrows / A D move · W / Space jump · X slash · Esc pause · R restart &nbsp;|&nbsp; </span>Art: Kenney (CC0)</div>
+  </section>
+
+  <section id="select" class="screen">
+    <div class="head"><h1>Pick a page</h1><div class="hint">finish a page to unlock the next one</div></div>
+    <div id="pages"></div>
+    <button class="btn small back" id="s-back">← TITLE</button>
+  </section>
+
+  <section id="skins" class="screen dim"><div class="card">
+    <h2>Skins</h2><p class="sub" id="sk-sub"></p><div id="sk-list"></div>
+    <div class="btns"><button class="btn primary" id="sk-back">BACK</button></div>
+  </div></section>
+
+  <section id="badges" class="screen dim"><div class="card" style="width:520px">
+    <h2>Badges</h2><p class="sub" id="bd-sub"></p><div id="bd-list"></div>
+    <div class="btns"><button class="btn primary" id="bd-back">BACK</button></div>
+  </div></section>
+
+  <section id="credits" class="screen dim"><div class="card">
+    <h2>Credits</h2><p class="sub">Scribble Jump · v1.0</p>
+    <div class="cr"><b>Game design &amp; code</b><span>Your name / studio here</span></div>
+    <div class="cr"><b>Art</b><span>Kenney — “Scribble Platformer Expansion” (CC0) · kenney.nl</span></div>
+    <div class="cr"><b>Sound &amp; music</b><span>Generated in-game with the Web Audio API</span></div>
+    <div class="cr"><b>Thanks for playing!</b><span>Turn the page and keep scribbling.</span></div>
+    <div class="btns"><button class="btn primary" id="c-back">BACK</button></div>
+  </div></section>
+
+  <section id="pause" class="screen dim"><div class="card">
+    <h2>Paused</h2><p class="sub" id="p-sub"></p>
+    <div class="btns" style="flex-direction:column"><button class="btn primary" id="p-resume">RESUME</button><button class="btn" id="p-restart">RESTART</button><button class="btn" id="p-quit">QUIT TO PAGES</button></div>
+    <div class="how"><span class="desk">← → / A D move · ↑ / W / Space jump · X slash · R restart · M mute</span></div>
+    <div class="toggles"><button class="btn" id="p-snd">SOUND</button><button class="btn" id="p-mus">MUSIC</button></div>
+  </div></section>
+
+  <section id="over" class="screen dim"><div class="card">
+    <h2 style="color:#b8383f">OUT OF LIVES</h2><p class="sub" id="o-page"></p>
+    <div class="meta" id="o-meta"></div>
+    <div class="btns"><button class="btn primary" id="o-revive" style="display:none">REVIVE (AD)</button><button class="btn primary" id="o-retry">TRY AGAIN</button><button class="btn" id="o-endless">ENDLESS</button><button class="btn" id="o-pages">BACK TO PAGES</button></div>
+  </div></section>
+
+  <section id="done" class="screen dim"><div class="card">
+    <h2 id="d-title">Page complete!</h2><p class="sub" id="d-sub"></p>
+    <div class="stars-list" id="d-stars"></div>
+    <div class="stamp" id="d-rank"></div>
+    <div class="meta" id="d-meta"></div><p class="teaser" id="d-teaser"></p>
+    <div class="btns"><button class="btn primary" id="d-next">NEXT PAGE</button><button class="btn" id="d-replay">REPLAY</button><button class="btn" id="d-endless">ENDLESS</button><button class="btn" id="d-pages">PAGES</button></div>
+  </div></section>
+
+  <section id="final" class="screen dim"><div class="card final">
+    <div class="grade" id="f-grade">A</div>
+    <h2>NOTEBOOK COMPLETE</h2><p class="sub" id="f-sub"></p>
+    <div id="f-rows"></div>
+    <div class="btns"><button class="btn primary" id="f-again">PLAY AGAIN</button><button class="btn" id="f-pages">PAGE SELECT</button></div>
+  </div></section>
+
+  <div id="touch"><div id="tpad"><span>◀</span><span>▶</span></div><div class="tb" id="ta">X</div><div class="tb" id="tj">▲</div></div>
+  <div id="rotate"><div class="phone">📱</div><b>Please rotate your device</b><span>Scribble Jump plays best in landscape</span></div>
+  <div id="loading">scribbling…<div class="bar"><i id="lbar"></i></div></div>
+</div>
+<!--INLINE-->
+<script>/*JS*/</script>
+</body>
+</html>
